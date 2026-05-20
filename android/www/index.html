@@ -1,0 +1,45 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>名著导读</title>
+    <link rel="manifest" href="/manifest.json">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-title" content="名著导读">
+    <meta name="theme-color" content="#8b4513">
+    <script>
+      if ('serviceWorker' in navigator) {
+        navigator.serviceWorker.register('/sw.js').then(function(reg) {
+          console.log('SW registered: ', reg.scope);
+        }).catch(function(err) {
+          console.log('SW failed: ', err);
+        });
+      }
+
+      var installPrompt = null;
+      window.addEventListener('beforeinstallprompt', function(e) {
+        e.preventDefault();
+        installPrompt = e;
+        var btn = document.createElement('button');
+        btn.textContent = '安装名著导读';
+        btn.style.cssText = 'position:fixed;bottom:20px;right:20px;padding:14px 24px;background:#8b4513;color:#fff;border:none;border-radius:10px;font-size:16px;z-index:9999;cursor:pointer;box-shadow:0 4px 12px rgba(0,0,0,0.3)';
+        btn.onclick = function() {
+          installPrompt.prompt();
+          installPrompt.userChoice.then(function(r) {
+            if (r.outcome === 'accepted') btn.remove();
+          });
+        };
+        document.body.appendChild(btn);
+      });
+    </script>
+
+    <script type="module" crossorigin src="/assets/index-CRQR55OK.js"></script>
+    <link rel="stylesheet" crossorigin href="/assets/index-C7ka3UOz.css">
+  </head>
+  <body>
+    <div id="root"></div>
+  </body>
+</html>
