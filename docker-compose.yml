@@ -1,0 +1,75 @@
+# ============================================================================
+# 名著导读 — Docker Compose 编排
+# 名著导读 API V3.0.0 + Caddy 反向代理
+#
+# 启动：docker-compose up -d
+# 停止：docker-compose down
+# 查看日志：docker-compose logs -f app
+# ============================================================================
+
+version: '3.8'
+
+services:
+  # =========================================================================
+  # FastAPI 应用服务
+  # =========================================================================
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    image: classics-guide:3.0.0
+    container_name: classics-app
+    ports:
+      - "8080:8080"
+    volumes:
+      # 数据目录：原著原文/人物资料/文学评论，卷挂载便于在线更新
+      - ./data:/app/data:ro
+      # 日志持久化：容器重启后日志不丢失
+      - ./logs:/app/logs
+      # 环境变量：含 JWT_SECRET / DB 密码 / API Key，只读注入
+      - ./.env:/app/.env:ro
+    restart: unless-stopped
+    environment:
+      - PYTHONUNBUFFERED=1
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:8080/api/health"]
+      interval: 30s
+      timeout: 10s
+      retries: 3
+      start_period: 15s
+    networks:
+      - classics-net
+
+  # =========================================================================
+  # Caddy 反向代理（内网 HTTP）
+  # cpolar 已处理公网 HTTPS termination，Caddy 负责内网反向代理和负载均衡
+  # =========================================================================
+  caddy:
+    image: caddy:2-alpine
+    container_name: classics-caddy
+    ports:
+      - "80:80"
+      - "443:443"
+    volumes:
+      - ./Caddyfile:/etc/caddy/Caddyfile:ro
+      - caddy_data:/data
+    restart: unless-stopped
+    depends_on:
+      app:
+        condition: service_healthy
+    networks:
+      - classics-net
+
+# ===========================================================================
+# 持久卷
+# ===========================================================================
+volumes:
+  caddy_data:
+    driver: local
+
+# ===========================================================================
+# 网络
+# ===========================================================================
+networks:
+  classics-net:
+    driver: bridge

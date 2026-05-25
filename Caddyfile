@@ -1,0 +1,49 @@
+# ============================================================================
+# 名著导读 — Caddy 反向代理配置
+#
+# 架构说明：
+#   - cpolar 公网隧道 → 外网 HTTPS → Caddy (:80) → app (:8080)
+#   - cpolar 已做 TLS termination，Caddy 负责内网反向代理
+#   - 如需直接暴露 HTTPS（不使用 cpolar），取消注释 tls 块即可
+# ============================================================================
+
+:80 {
+    # 反向代理到 FastAPI 应用
+    reverse_proxy app:8080 {
+        # 健康检查：每 30 秒探测一次
+        health_uri /api/health
+        health_interval 30s
+        health_timeout 5s
+    }
+
+    # 请求日志（调试时可取消注释）
+    # log {
+    #     output file /var/log/caddy/access.log
+    # }
+
+    # 安全头
+    header {
+        # 防止点击劫持
+        X-Frame-Options "DENY"
+        # 防止 MIME 类型嗅探
+        X-Content-Type-Options "nosniff"
+        # XSS 保护
+        X-XSS-Protection "1; mode=block"
+        # 引用策略
+        Referrer-Policy "strict-origin-when-cross-origin"
+    }
+
+    # 请求体大小限制（聊天接口可能较大）
+    request_body {
+        max_size 10MB
+    }
+}
+
+# ============================================================================
+# HTTPS 模式（如需 Caddy 自动申请 Let's Encrypt 证书，取消注释以下块）
+# 前提：域名 DNS 已指向本机，且 80/443 端口可从公网访问
+# ============================================================================
+# mingzhu.classics.cn {
+#     reverse_proxy app:8080
+#     tls admin@example.com
+# }

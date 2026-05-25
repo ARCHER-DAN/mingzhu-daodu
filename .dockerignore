@@ -1,0 +1,54 @@
+# Git
+.git/
+.gitignore
+.gitattributes
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.venv/
+
+# Node
+node_modules/
+frontend/node_modules/
+frontend/test-results/
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+
+# 构建产物
+build/
+dist/
+*.exe
+*.spec
+android/
+
+# 日志
+logs/
+*.log
+
+# 开源发布（脱敏版本）
+opensource/
+
+# 备份
+backups/
+
+# 简历和文档
+简历*.docx
+简历*.pdf
+02_输出文件/
+
+# Claude Code
+.claude/
+
+# Docker 自身
+Dockerfile
+.dockerignore
+docker-compose.yml
+
+# 密钥（.env 单独处理，不在镜像内硬编码）
+# .env 通过 docker-compose 卷挂载注入

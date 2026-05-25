@@ -1,0 +1,23 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover" />
+    <title>名著导读 — AI 驱动的四大名著交互阅读平台</title>
+    <meta name="description" content="基于 AI 的四大名著交互阅读平台，探索西游记、三国演义、红楼梦、水浒传的经典智慧" />
+    <meta name="theme-color" content="#6B3A2A" />
+    <script>
+      (function() {
+        var theme = localStorage.getItem('mingzhu_theme');
+        if (theme === 'dark' || (!theme && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+          document.documentElement.setAttribute('data-theme', 'dark');
+        }
+      })();
+    </script>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.jsx"></script>
+  </body>
+</html>
